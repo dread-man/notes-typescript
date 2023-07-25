@@ -48,7 +48,7 @@ function App() {
         })
     }, [notes, tags])
 
-    function onCreateNote({ tags, ...data }: NoteData) {
+    function onCreateNote({ tags, ...data }: NoteData): void {
         setNotes((prevNotes) => {
             return [
                 ...prevNotes,
@@ -61,17 +61,17 @@ function App() {
         })
     }
 
-	function onDeleteNote(id: string) {
-		setNotes(prevNotes => {
-			return prevNotes.filter(note => note.id !== id)
-		})
-	}
+    function onDeleteNote(id: string): void {
+        setNotes((prevNotes) => {
+            return prevNotes.filter((note) => note.id !== id)
+        })
+    }
 
-    function addTag(tag: Tag) {
+    function addTag(tag: Tag): void {
         setTags((prev) => [...prev, tag])
     }
 
-    function onUpdateNote(id: string, { tags, ...data }: NoteData) {
+    function onUpdateNote(id: string, { tags, ...data }: NoteData): void {
         setNotes((prevNotes) => {
             return prevNotes.map((note) => {
                 if (note.id === id) {
@@ -87,13 +87,36 @@ function App() {
         })
     }
 
+    function updateTag(id: string, label: string): void {
+        setTags((prevTags) => {
+            return prevTags.map((tag) => {
+                if (tag.id === id) {
+                    return { ...tag, label }
+                } else {
+                    return tag
+                }
+            })
+        })
+    }
+
+    function deleteTag(id: string): void {
+        setTags((prevTags) => {
+            return prevTags.filter(tag => tag.id !== id)
+        })
+    }
+
     return (
         <Container className="my-4">
             <Routes>
                 <Route
                     path="/"
                     element={
-                        <NoteList notes={notesWithTags} availableTags={tags} />
+                        <NoteList
+                            notes={notesWithTags}
+                            availableTags={tags}
+                            onUpdateTag={updateTag}
+                            onDeleteTag={deleteTag}
+                        />
                     }
                 />
                 <Route
@@ -110,7 +133,7 @@ function App() {
                     path="/:id"
                     element={<NoteLayout notes={notesWithTags} />}
                 >
-                    <Route index element={<Note onDelete={onDeleteNote}/>} />
+                    <Route index element={<Note onDelete={onDeleteNote} />} />
                     <Route
                         path="edit"
                         element={
